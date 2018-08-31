@@ -3987,7 +3987,7 @@ sub run_testcase ($$) {
   while (1)
   {
     my $proc = 0;
-    if (scalar(keys(%keep_waiting_proc)) > 0)
+    if (%keep_waiting_proc)
     {
       # Any other process exited?
       $proc = My::SafeProcess->check_any();
@@ -4004,7 +4004,7 @@ sub run_testcase ($$) {
 	}
       }
     }
-    if (scalar(keys(%keep_waiting_proc)) == 0 && !$proc)
+    if (!$proc)
     {
       if ($test_timeout > $print_timeout)
       {
@@ -4134,11 +4134,14 @@ sub run_testcase ($$) {
       # It was not mysqltest that exited, add to a wait-to-be-started-again list.
       $keep_waiting_proc{$proc} = 1;
     }
+    else
+    {
+      mtr_error("wait_any failed");
+    }
 
     mtr_verbose("Got " . join(",", keys(%keep_waiting_proc)));
 
     mark_time_used('test');
-    my $expected_exit = 1;
     foreach my $wait_for_proc (keys(%keep_waiting_proc)) {
       # ----------------------------------------------------
       # Check if it was an expected crash
@@ -4146,8 +4149,7 @@ sub run_testcase ($$) {
       my $check_crash = check_expected_crash_and_restart($wait_for_proc);
       if ($check_crash == 0) # unexpected exit/crash of $wait_for_proc
       {
-        $expected_exit = 0;
-        last;
+        goto SRVDIED;
       }
       elsif ($check_crash == 1) # $wait_for_proc was started again by check_expected_crash_and_restart()
       {
@@ -4159,9 +4161,7 @@ sub run_testcase ($$) {
       }
     }
 
-    if ($expected_exit) {
-      next;
-    }
+    next;
 
   SRVDIED:
     # ----------------------------------------------------
