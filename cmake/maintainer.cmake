@@ -17,10 +17,26 @@ IF(MSVC)
   RETURN()
 ENDIF()
 
-# Common warning flags for GCC, G++, Clang and Clang++
-SET(MY_WARNING_FLAGS
+# Common warning flags for GCC and Clang
+SET(MY_CC_WARNING_FLAGS
   -Wall
   -Wdeclaration-after-statement
+  -Wextra
+  -Wformat-security
+  -Wno-format-truncation
+  -Wno-init-self
+  -Wno-nonnull-compare
+  -Wno-null-conversion
+  -Wno-unused-parameter
+  -Wno-unused-private-field
+  -Wvla
+  -Wwrite-strings
+  -Werror
+  )
+
+# Common warning flags for G++ and Clang++
+SET(MY_CXX_WARNING_FLAGS
+  -Wall
   -Wextra
   -Wformat-security
   -Wno-format-truncation
@@ -46,9 +62,14 @@ ELSEIF(MYSQL_MAINTAINER_MODE MATCHES "AUTO")
   SET(WHERE DEBUG)
 ENDIF()
 
-FOREACH(F ${MY_WARNING_FLAGS})
-  MY_CHECK_AND_SET_COMPILER_FLAG(${F} ${WHERE})
+FOREACH(F ${MY_CC_WARNING_FLAGS})
+  MY_CHECK_AND_SET_COMPILER_FLAG_CC(${F} ${WHERE})
 ENDFOREACH()
+
+FOREACH(F ${MY_CXX_WARNING_FLAGS})
+  MY_CHECK_AND_SET_COMPILER_FLAG_CXX(${F} ${WHERE})
+ENDFOREACH()
+
 
 IF(CMAKE_C_COMPILER_ID MATCHES "GNU")
   STRING(REPLACE " -E " " -E -dDI " CMAKE_C_CREATE_PREPROCESSED_SOURCE ${CMAKE_C_CREATE_PREPROCESSED_SOURCE})

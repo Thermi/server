@@ -49,9 +49,16 @@ include(CheckCXXCompilerFlag)
 ## adds a compiler flag if the compiler supports it
 macro(set_cflags_if_supported)
   foreach(flag ${ARGN})
-    MY_CHECK_AND_SET_COMPILER_FLAG(${flag})
+    MY_CHECK_AND_SET_COMPILER_FLAG_CC(${flag})
   endforeach(flag)
 endmacro(set_cflags_if_supported)
+
+## adds a compiler flag if the compiler supports it
+macro(set_cxxflags_if_supported)
+  foreach(flag ${ARGN})
+    MY_CHECK_AND_SET_COMPILER_FLAG_CXX(${flag})
+  endforeach(flag)
+endmacro(set_cxxflags_if_supported)
 
 if (NOT DEFINED MYSQL_PROJECT_NAME_DOCSTRING)
   set (OPTIONAL_CFLAGS "${OPTIONAL_CFLAGS} -Wmissing-format-attribute")
@@ -60,7 +67,7 @@ endif()
 ## disable some warnings
 ## missing-format-attribute causes warnings in some MySQL include files
 ## if the library is built as a part of TokuDB MySQL storage engine
-set_cflags_if_supported(
+set_cxxflags_if_supported(
   -Wno-missing-field-initializers
   -Wstrict-null-sentinel
   -Winit-self
@@ -83,6 +90,9 @@ if (NOT CMAKE_CXX_COMPILER_ID MATCHES Clang)
   set_cflags_if_supported(
     -Wpacked
     )
+  set_cxxflags_if_supported(
+    -Wpacked
+    )
 endif ()
 
 option (PROFILING "Allow profiling and debug" ON)
@@ -90,11 +100,18 @@ if (PROFILING)
   set_cflags_if_supported(
     -fno-omit-frame-pointer
   )
+  set_cxxflags_if_supported(
+    -fno-omit-frame-pointer
+  )
 endif ()
 
 ## this hits with optimized builds somewhere in ftleaf_split, we don't
 ## know why but we don't think it's a big deal
 set_cflags_if_supported(
+  -Wno-error=strict-overflow
+  )
+
+set_cxxflags_if_supported(
   -Wno-error=strict-overflow
   )
 
@@ -159,6 +176,7 @@ set_cflags_if_supported(
 if (NOT CMAKE_CXX_COMPILER_ID STREQUAL Clang)
   # Disabling -Wcast-align with clang.  TODO: fix casting and re-enable it, someday.
   set_cflags_if_supported(-Wcast-align)
+  set_cxxflags_if_supported(-Wcast-align)
 endif ()
 
 ## always want these in debug builds

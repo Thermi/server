@@ -10,7 +10,8 @@ set(CMAKE_SHARED_LIBRARY_LINK_C_FLAGS "")
 set(CMAKE_SHARED_LIBRARY_LINK_CXX_FLAGS "")
 
 # See: https://jira.percona.com/browse/TDB-93
-MY_CHECK_AND_SET_COMPILER_FLAG("-Wno-address-of-packed-member")
+MY_CHECK_AND_SET_COMPILER_FLAG_CC("-Wno-address-of-packed-member")
+MY_CHECK_AND_SET_COMPILER_FLAG_CXX("-Wno-address-of-packed-member")
 
 # detect when we are being built as a subproject
 if (DEFINED MYSQL_PROJECT_NAME_DOCSTRING)

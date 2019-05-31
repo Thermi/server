@@ -5,7 +5,8 @@ IF(WIN32)
   RETURN()
 ENDIF()
 
-MY_CHECK_AND_SET_COMPILER_FLAG("-Wno-deprecated-declarations")
+MY_CHECK_AND_SET_COMPILER_FLAG_CC("-Wno-deprecated-declarations")
+MY_CHECK_AND_SET_COMPILER_FLAG_CXX("-Wno-deprecated-declarations")
 
 INCLUDE_DIRECTORIES(libhsclient)
 

@@ -41,15 +41,19 @@ add_definitions( -DMARIADB -DFORCE_INIT_OF_VARS -Dconnect_EXPORTS)
 add_definitions( -DHUGE_SUPPORT -DGZ_SUPPORT )
 
 macro(DISABLE_WARNING W)
-  MY_CHECK_AND_SET_COMPILER_FLAG("-Wno-error=${W}")
-  MY_CHECK_AND_SET_COMPILER_FLAG("-Wno-${W}" DEBUG)
+  MY_CHECK_AND_SET_COMPILER_FLAG_CC("-Wno-error=${W}")
+  MY_CHECK_AND_SET_COMPILER_FLAG_CC("-Wno-${W}" DEBUG)
+  MY_CHECK_AND_SET_COMPILER_FLAG_CXX("-Wno-error=${W}")
+  MY_CHECK_AND_SET_COMPILER_FLAG_CXX("-Wno-${W}" DEBUG)
+
 endmacro()
 
 #
 # OS specific C flags, definitions and source files.
 #
 IF(UNIX)
-  MY_CHECK_AND_SET_COMPILER_FLAG("-Wall -Wmissing-declarations")
+  MY_CHECK_AND_SET_COMPILER_FLAG_CC("-Wall -Wmissing-declarations")
+  MY_CHECK_AND_SET_COMPILER_FLAG_CXX("-Wall -Wmissing-declarations")
   if(NOT WITH_WARNINGS)
     DISABLE_WARNING("unused-function")
     DISABLE_WARNING("unused-variable")

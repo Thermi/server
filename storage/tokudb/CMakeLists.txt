@@ -87,9 +87,14 @@ ENDIF()
 
 CONFIGURE_FILE(tokudb.cnf.in tokudb.cnf @ONLY)
 
-MY_CHECK_AND_SET_COMPILER_FLAG("-Wno-shadow")
-MY_CHECK_AND_SET_COMPILER_FLAG("-Wno-vla" DEBUG)
-MY_CHECK_AND_SET_COMPILER_FLAG("-Wno-implicit-fallthrough")
+MY_CHECK_AND_SET_COMPILER_FLAG_CC("-Wno-shadow")
+MY_CHECK_AND_SET_COMPILER_FLAG_CC("-Wno-vla" DEBUG)
+MY_CHECK_AND_SET_COMPILER_FLAG_CC("-Wno-implicit-fallthrough")
+
+MY_CHECK_AND_SET_COMPILER_FLAG_CXX("-Wno-shadow")
+MY_CHECK_AND_SET_COMPILER_FLAG_CXX("-Wno-vla" DEBUG)
+MY_CHECK_AND_SET_COMPILER_FLAG_CXX("-Wno-implicit-fallthrough")
+
 
 ############################################
 MARK_AS_ADVANCED(BUILDNAME)
@@ -108,7 +113,7 @@ MARK_AS_ADVANCED(gcc_ranlib)
 ############################################
 
 # pick language dialect
-MY_CHECK_AND_SET_COMPILER_FLAG(-std=c++11)
+MY_CHECK_AND_SET_COMPILER_FLAG_CXX(-std=c++11)
 
 SET(BUILD_TESTING OFF CACHE BOOL "")
 SET(USE_VALGRIND OFF CACHE BOOL "")
@@ -135,7 +140,8 @@ IF(DEFINED TOKUDB_NOPATCH_CONFIG)
     ADD_DEFINITIONS("-DTOKUDB_NOPATCH_CONFIG=${TOKUDB_NOPATCH_CONFIG}")
 ENDIF()
 
-MY_CHECK_AND_SET_COMPILER_FLAG(-Wno-missing-field-initializers)
+MY_CHECK_AND_SET_COMPILER_FLAG_CC(-Wno-missing-field-initializers)
+MY_CHECK_AND_SET_COMPILER_FLAG_CXX(-Wno-missing-field-initializers)
 
 IF (EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/PerconaFT/")
     IF (EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/ft-index/")

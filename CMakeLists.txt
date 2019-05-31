@@ -190,7 +190,8 @@ OPTION(WITH_ASAN "Enable address sanitizer" OFF)
 
 IF (WITH_ASAN AND NOT MSVC)
   # gcc 4.8.1 and new versions of clang
-  MY_CHECK_AND_SET_COMPILER_FLAG("-fsanitize=address -fPIC"
+  MY_CHECK_AND_SET_COMPILER_FLAG_CC("-fsanitize=address -fPIC")
+  MY_CHECK_AND_SET_COMPILER_FLAG_CXX("-fsanitize=address -fPIC"
     DEBUG RELWITHDEBINFO)
   SET(HAVE_C_FSANITIZE ${have_C__fsanitize_address__fPIC})
   SET(HAVE_CXX_FSANITIZE ${have_CXX__fsanitize_address__fPIC})
@@ -198,7 +199,8 @@ IF (WITH_ASAN AND NOT MSVC)
     SET(WITH_ASAN_OK 1)
   ELSE()
     # older versions of clang
-    MY_CHECK_AND_SET_COMPILER_FLAG("-faddress-sanitizer -fPIC"
+    MY_CHECK_AND_SET_COMPILER_FLAG_CC("-faddress-sanitizer -fPIC")
+    MY_CHECK_AND_SET_COMPILER_FLAG_CXX("-faddress-sanitizer -fPIC"
       DEBUG RELWITHDEBINFO)
     SET(HAVE_C_FADDRESS ${have_C__faddress_sanitizer__fPIC})
     SET(HAVE_CXX_FADDRESS ${have_CXX__faddress_sanitizer__fPIC})
@@ -217,7 +219,8 @@ IF (WITH_TSAN)
   IF(SECURITY_HARDENED)
     MESSAGE(FATAL_ERROR "WITH_TSAN and SECURITY_HARDENED are mutually exclusive")
   ENDIF()
-  MY_CHECK_AND_SET_COMPILER_FLAG("-fsanitize=thread" DEBUG RELWITHDEBINFO)
+  MY_CHECK_AND_SET_COMPILER_FLAG_CC("-fsanitize=thread" DEBUG RELWITHDEBINFO)
+  MY_CHECK_AND_SET_COMPILER_FLAG_CXX("-fsanitize=thread" DEBUG RELWITHDEBINFO)
 ENDIF()
 
 OPTION(WITH_UBSAN "Enable undefined behavior sanitizer" OFF)
@@ -225,7 +228,8 @@ IF (WITH_UBSAN)
   IF(SECURITY_HARDENED)
     MESSAGE(FATAL_ERROR "WITH_UBSAN and SECURITY_HARDENED are mutually exclusive")
   ENDIF()
-  MY_CHECK_AND_SET_COMPILER_FLAG("-fsanitize=undefined -fno-sanitize=alignment" DEBUG RELWITHDEBINFO)
+  MY_CHECK_AND_SET_COMPILER_FLAG_CC("-fsanitize=undefined -fno-sanitize=alignment" DEBUG RELWITHDEBINFO)
+  MY_CHECK_AND_SET_COMPILER_FLAG_CXX("-fsanitize=undefined -fno-sanitize=alignment" DEBUG RELWITHDEBINFO)
 ENDIF()
 
 IF(NOT WITH_TSAN)
@@ -239,10 +243,14 @@ IF(NOT WITH_TSAN)
   OPTION(SECURITY_HARDENED "Use security-enhancing compiler features (stack protector, relro, etc)" ${security_default})
   IF(SECURITY_HARDENED)
     # security-enhancing flags
-    MY_CHECK_AND_SET_COMPILER_FLAG("-pie -fPIC")
-    MY_CHECK_AND_SET_COMPILER_FLAG("-Wl,-z,relro,-z,now")
-    MY_CHECK_AND_SET_COMPILER_FLAG("-fstack-protector --param=ssp-buffer-size=4")
-    MY_CHECK_AND_SET_COMPILER_FLAG("-D_FORTIFY_SOURCE=2" RELEASE RELWITHDEBINFO)
+    MY_CHECK_AND_SET_COMPILER_FLAG_CC("-pie -fPIC")
+    MY_CHECK_AND_SET_COMPILER_FLAG_CXX("-pie -fPIC")
+    MY_CHECK_AND_SET_COMPILER_FLAG_CC("-Wl,-z,relro,-z,now")
+    MY_CHECK_AND_SET_COMPILER_FLAG_CXX("-Wl,-z,relro,-z,now")
+    MY_CHECK_AND_SET_COMPILER_FLAG_CC("-fstack-protector --param=ssp-buffer-size=4")
+    MY_CHECK_AND_SET_COMPILER_FLAG_CXX("-fstack-protector --param=ssp-buffer-size=4")
+    MY_CHECK_AND_SET_COMPILER_FLAG_CC("-D_FORTIFY_SOURCE=2" RELEASE RELWITHDEBINFO)
+    MY_CHECK_AND_SET_COMPILER_FLAG_CXX("-D_FORTIFY_SOURCE=2" RELEASE RELWITHDEBINFO)
   ENDIF()
 ENDIF()
 
@@ -252,10 +260,12 @@ SET(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} -DENABLED_DEBUG_SYNC")
  
 OPTION(ENABLE_GCOV "Enable gcov (debug, Linux builds only)" OFF)
 IF (ENABLE_GCOV)
-  MY_CHECK_AND_SET_COMPILER_FLAG("-fprofile-arcs -ftest-coverage -lgcov" DEBUG)
+  MY_CHECK_AND_SET_COMPILER_FLAG_CC("-fprofile-arcs -ftest-coverage -lgcov" DEBUG)
+  MY_CHECK_AND_SET_COMPILER_FLAG_CXX("-fprofile-arcs -ftest-coverage -lgcov" DEBUG)
 ENDIF()
 
-MY_CHECK_AND_SET_COMPILER_FLAG(-ggdb3 DEBUG)
+MY_CHECK_AND_SET_COMPILER_FLAG_CC(-ggdb3 DEBUG)
+MY_CHECK_AND_SET_COMPILER_FLAG_CXX(-ggdb3 DEBUG)
 
 SET(ENABLED_LOCAL_INFILE "AUTO" CACHE STRING "If we should should enable LOAD DATA LOCAL by default (OFF/ON/AUTO)")
 IF (ENABLED_LOCAL_INFILE MATCHES "^(0|FALSE)$")
